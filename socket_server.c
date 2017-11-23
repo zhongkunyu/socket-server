@@ -1597,3 +1597,10 @@ socket_server_udp_address(struct socket_server *ss, struct socket_message *msg, 
 	}
 	return (const struct socket_udp_address *)address;
 }
+
+int socket_server_get_client_fd_via_id(struct socket_server *ss, int id)
+{
+    struct socket * s = &ss->slot[HASH_ID(id)];
+
+    return s->fd;
+}

@@ -6,10 +6,18 @@
 #include <unistd.h>
 #include <signal.h>
 
+struct mypara
+{
+    int sock_id;
+    void * ud;
+};
+
+
 static void* 
 client_event_proc(void *arg)
 {
-    int new_client = (int)arg;
+    struct mypara *arg_sock = arg;
+    int new_client = socket_server_get_client_fd_via_id(arg_sock->ud, arg_sock->sock_id);
     char buf[1024];
 
     printf("create a new thread, thread_id is: %u\n", pthread_self());
@@ -66,7 +74,11 @@ _poll(void * ud) {
 			printf("accept(%lu) [id=%d %s] from [%d]\n",result.opaque, result.ud, result.data, result.id);
             {
                 pthread_t pid;
-                pthread_create(&pid, NULL, client_event_proc, result.opaque);
+                struct mypara arg_sock;
+
+                arg_sock.sock_id = result.id;
+                arg_sock.ud = ss;
+                pthread_create(&pid, NULL, client_event_proc, &arg_sock);
 
                 pthread_join(pid, NULL);
             }

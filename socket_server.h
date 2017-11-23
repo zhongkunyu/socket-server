@@ -67,4 +67,6 @@ struct socket_object_interface {
 // if you send package sz == -1, use soi.
 void socket_server_userobject(struct socket_server *, struct socket_object_interface *soi);
 
+int socket_server_get_client_fd_via_id(struct socket_server *ss, int id);
+
 #endif
