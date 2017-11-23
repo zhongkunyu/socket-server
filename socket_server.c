@@ -1130,6 +1130,7 @@ report_accept(struct socket_server *ss, struct socket *s, struct socket_message 
 	if (client_fd < 0) {
 		return 0;
 	}
+    printf("received client new socket : %d\n", client_fd);
 	int id = reserve_id(ss);
 	if (id < 0) {
 		close(client_fd);
