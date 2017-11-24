@@ -9,7 +9,7 @@
 struct mypara
 {
     int sock_id;
-    void * ud;
+    void * socket_server;
 };
 
 
@@ -17,14 +17,14 @@ static void*
 client_event_proc(void *arg)
 {
     struct mypara *arg_sock = arg;
-    int new_client = socket_server_get_client_fd_via_id(arg_sock->ud, arg_sock->sock_id);
+    int new_client = socket_server_get_client_fd_via_id(arg_sock->socket_server, arg_sock->sock_id);
     char buf[1024];
 
     printf("create a new thread, thread_id is: %u, socket id is: %d\n", pthread_self(), new_client);
 
-    memset(buf, '\0', sizeof(buf));
     while (1)
     {
+        memset(buf, '\0', sizeof(buf));
         //reading from new_client and store to buf
         ssize_t  _size = read(new_client, buf, sizeof(buf) - 1);
         if (_size < 0)
@@ -76,8 +76,8 @@ _poll(void * ud) {
                 pthread_t pid;
                 struct mypara arg_sock;
 
-                arg_sock.sock_id = result.id;
-                arg_sock.ud = ss;
+                arg_sock.sock_id = result.ud;
+                arg_sock.socket_server = ss;
                 pthread_create(&pid, NULL, client_event_proc, &arg_sock);
 
                 pthread_join(pid, NULL);
@@ -94,7 +94,7 @@ test(struct socket_server *ss) {
 
 	//int c = socket_server_connect(ss,100,"127.0.0.1",80);
 	//printf("connecting %d\n",c);
-	int l = socket_server_listen(ss,200,"0.0.0.0",8888,32);
+	int l = socket_server_listen(ss,200,"0.0.0.0", 8828,32);
 	printf("listening %d\n",l);
 	socket_server_start(ss,201,l);
 	//int b = socket_server_bind(ss,300,1);
