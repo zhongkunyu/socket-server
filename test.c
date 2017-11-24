@@ -29,12 +29,13 @@ client_event_proc(void *arg)
     {
         FD_ZERO(&readfd);
         FD_SET(new_client, &readfd);
-        ret = select(0, &readfd, NULL, NULL, &timeout);
+        ret = select(new_client+1, &readfd, NULL, NULL, &timeout);
         switch (ret)
         {
         case -1:
         {
             perror("select socket");
+            goto END;
         }
         break;
         case 0:
