@@ -32,43 +32,46 @@ client_event_proc(void *arg)
         ret = select(new_client+1, &readfd, NULL, NULL, &timeout);
         switch (ret)
         {
-        case -1:
-        {
-            perror("select socket");
-            goto END;
-        }
-        break;
-        case 0:
-        {
-            printf("select timeout\n");
-        }
-        break;
-        default:
-        {
-            memset(buf, '\0', sizeof(buf));
-            //reading from new_client and store to buf
-            ssize_t _size = read(new_client, buf, sizeof(buf) - 1);
-            if (_size < 0)
+            case -1:
             {
                 perror("select socket");
-                break;
-            }
-            else if (_size == 0)
-            {
-                printf("client release!\n");
                 goto END;
             }
-            else
+            break;
+            case 0:
             {
-                buf[_size] = '\0';
-                printf("%s\n", buf);
+                printf("select timeout\n");
+                goto END;
             }
-        }
-        break;
+            break;
+            default:
+            {
+                if (FD_ISSET(new_client, &readfd))
+                {
+                    memset(buf, '\0', sizeof(buf));
+                    ssize_t _size = read(new_client, buf, sizeof(buf) - 1);
+                    if (_size < 0)
+                    {
+                        perror("read socket");
+                        break;
+                    }
+                    else if (_size == 0)
+                    {
+                        printf("client release!\n");
+                        goto END;
+                    }
+                    else
+                    {
+                        buf[_size] = '\0';
+                        printf("%s\n", buf);
+                    }
+                }
+            }
+            break;
         }
     }
 
-    END:
+END:
     close(new_client);
 }
 
