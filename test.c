@@ -35,8 +35,8 @@ client_event_proc(void *arg)
         case -1:
         {
             perror("select socket");
-            break;
         }
+        break;
         case 0:
         {
             printf("select timeout\n");
@@ -55,7 +55,7 @@ client_event_proc(void *arg)
             else if (_size == 0)
             {
                 printf("client release!\n");
-                break;
+                goto END;
             }
             else
             {
@@ -66,6 +66,8 @@ client_event_proc(void *arg)
         break;
         }
     }
+
+    END:
     close(new_client);
 }
 
@@ -117,7 +119,7 @@ test(struct socket_server *ss) {
 
     //int c = socket_server_connect(ss,100,"127.0.0.1",80);
     //printf("connecting %d\n",c);
-    int l = socket_server_listen(ss, 200, "0.0.0.0", 8828, 32);
+    int l = socket_server_listen(ss, 200, "0.0.0.0", 8826, 32);
     printf("listening %d\n", l);
     socket_server_start(ss, 201, l);
     //int b = socket_server_bind(ss,300,1);
